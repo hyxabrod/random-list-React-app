@@ -37,12 +37,7 @@ export class GetItemDetailUseCase extends UseCaseWithArgs<GetItemDetailArgs, Ite
                 return Result.failure(new Error('Invalid item detail received'));
             }
 
-            if (!detail.metadata || !detail.metadata.sentencesCount) {
-                if (detail.text) {
-                    const sentences = detail.text.split(/[.!?]+/).filter(Boolean).length;
-                    detail.metadata = { sentencesCount: sentences };
-                }
-            }
+
 
             return Result.success(detail.toPresentationModel());
         } catch (error: any) {

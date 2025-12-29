@@ -34,22 +34,20 @@ export default function ListScreen({ navigation }: Props) {
         initialize();
     }, [initialize]);
 
-    const renderItem: ListRenderItem<ListItemPresentationModel> = ({ item, index }) => (
-        <TouchableOpacity
-            style={styles.itemContainer}
-            onPress={() => navigation.navigate('Details', {
-                title: item.title,
-                id: item.id
-            })}
-            activeOpacity={0.7}
-        >
-            <View style={styles.itemContent}>
-                <Text style={styles.itemNumber}>{index + 1}</Text>
-                <Text style={styles.itemTitle}>{item.title}</Text>
-                <Text style={styles.arrow}>›</Text>
-            </View>
-        </TouchableOpacity>
-    );
+    const handleItemPress = React.useCallback((item: ListItemPresentationModel) => {
+        navigation.navigate('Details', {
+            title: item.title,
+            id: item.id
+        });
+    }, [navigation]);
+
+    const renderItem: ListRenderItem<ListItemPresentationModel> = React.useCallback(({ item, index }) => (
+        <ListItem
+            item={item}
+            index={index}
+            onPress={handleItemPress}
+        />
+    ), [handleItemPress]);
 
     const renderFooter = () => {
         if (!isLoadingMore) return null;
@@ -116,6 +114,24 @@ export default function ListScreen({ navigation }: Props) {
         </View>
     );
 }
+
+const ListItem = React.memo(({ item, index, onPress }: {
+    item: ListItemPresentationModel;
+    index: number;
+    onPress: (item: ListItemPresentationModel) => void;
+}) => (
+    <TouchableOpacity
+        style={styles.itemContainer}
+        onPress={() => onPress(item)}
+        activeOpacity={0.7}
+    >
+        <View style={styles.itemContent}>
+            <Text style={styles.itemNumber}>{index + 1}</Text>
+            <Text style={styles.itemTitle}>{item.title}</Text>
+            <Text style={styles.arrow}>›</Text>
+        </View>
+    </TouchableOpacity>
+));
 
 const styles = StyleSheet.create({
     container: {

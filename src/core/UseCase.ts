@@ -3,7 +3,6 @@ import { Observable } from 'rxjs';
 import { PresentationModel } from './PresentationModel';
 
 export class UseCase {
-    // Base class for identification if needed
 }
 
 export type UseCaseResult = PresentationModel | PresentationModel[];
@@ -20,8 +19,6 @@ export abstract class UseCaseWithArgs<TArgs extends UseCaseArgs, TResult extends
     static Args = UseCaseArgs;
 
     async execute(args: TArgs): Promise<Result<TResult>> {
-        // Validation relies on generics in TS, but we can check instance if TArgs extends string/number/etc?
-        // With 'extends UseCaseArgs', we can check instanceof
         if (!args || !(args instanceof UseCaseArgs)) {
             throw new Error(`Arguments must be an instance of UseCaseArgs. Received: ${args}`);
         }

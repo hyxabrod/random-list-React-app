@@ -6,8 +6,7 @@ export class ItemDetailPresentationModel extends PresentationModel {
         public id: string,
         public title: string,
         public text: string,
-        public imageUrl: string,
-        public metadata: any
+        public imageUrl: string
     ) {
         super();
     }

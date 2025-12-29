@@ -44,7 +44,7 @@ export class MockItemDataSource {
             id: baseItem.id,
             title: baseItem.title,
             text: generateRandomText(10),
-            metadata: null,
+
         };
 
         this.detailCache.set(id, detail);

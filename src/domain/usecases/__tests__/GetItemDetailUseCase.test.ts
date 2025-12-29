@@ -31,7 +31,6 @@ describe('GetItemDetailUseCase', () => {
         expect(result.isSuccess).toBe(true);
         expect(result.getValue()).toBeInstanceOf(ItemDetailPresentationModel);
         expect(result.getValue().id).toBe(mockDetail.id);
-        expect(result.getValue().metadata.sentencesCount).toBe(1);
     });
 
     it('should call repository with correct arguments', async () => {
