@@ -17,7 +17,7 @@ describe('useListStore', () => {
 
         mockController = {
             subscribe: jest.fn((callback) => {
-                return jest.fn(); 
+                return jest.fn();
             }),
             getState: jest.fn(() => ({ items: [], currentPage: 0, error: null })),
             initialize: jest.fn(),
@@ -45,6 +45,10 @@ describe('useListStore', () => {
 
         expect(result.current.items).toEqual([]);
         expect(result.current.currentPage).toBe(0);
+    });
+
+    it('should resolve dependencies correctly', () => {
+        renderHook(() => useListStore());
         expect(mockContainer.get).toHaveBeenCalledWith(TYPES.ListStoreController);
     });
 

@@ -15,11 +15,14 @@ describe('RefreshItemsUseCase', () => {
         useCase = new RefreshItemsUseCase(mockItemRepository);
     });
 
-    it('should call repository refreshItems and return success', async () => {
+    it('should return success result', async () => {
         const result = await useCase.execute();
-
-        expect(mockItemRepository.refreshItems).toHaveBeenCalled();
         expect(result.isSuccess).toBe(true);
+    });
+
+    it('should call repository method', async () => {
+        await useCase.execute();
+        expect(mockItemRepository.refreshItems).toHaveBeenCalled();
     });
 
     it('should return failure if repository fails', async () => {

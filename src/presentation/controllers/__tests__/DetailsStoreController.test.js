@@ -57,10 +57,18 @@ describe('DetailsStoreController', () => {
 
         await promise;
 
-        expect(mockGetItemDetailUseCase.execute).toHaveBeenCalledWith({ id: '1' });
         expect(controller.getState().detail).toEqual(mockDetail);
         expect(controller.getState().isLoading).toBe(false);
         expect(controller.getState().detailsCache.get('1')).toEqual(mockDetail);
+    });
+
+    it('should call GetItemDetailUseCase with correct args', async () => {
+        const mockDetail = { id: '1', title: 'Details' };
+        mockGetItemDetailUseCase.execute.mockResolvedValue(Result.success(mockDetail));
+
+        await controller.getItemDetails('1');
+
+        expect(mockGetItemDetailUseCase.execute).toHaveBeenCalledWith({ id: '1' });
     });
 
     it('should check cache before fetching', async () => {
@@ -93,10 +101,17 @@ describe('DetailsStoreController', () => {
 
         await controller.getItemDetails('1');
 
-        expect(mockObserveViewCountUseCase.execute).toHaveBeenCalledWith('1');
-
         viewCountSubject.next(42);
         expect(controller.getState().viewCount).toBe(42);
+    });
+
+    it('should call ObserveViewCountUseCase correctly', async () => {
+        const mockDetail = { id: '1', title: 'Details' };
+        mockGetItemDetailUseCase.execute.mockResolvedValue(Result.success(mockDetail));
+
+        await controller.getItemDetails('1');
+
+        expect(mockObserveViewCountUseCase.execute).toHaveBeenCalledWith('1');
     });
 
     it('should stop and start observing on app state change', async () => {

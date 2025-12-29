@@ -18,7 +18,7 @@ describe('useDetailsStore', () => {
 
         mockController = {
             subscribe: jest.fn((callback) => {
-                return jest.fn(); 
+                return jest.fn();
             }),
             getState: jest.fn(() => ({
                 detail: null,
@@ -47,6 +47,10 @@ describe('useDetailsStore', () => {
 
         expect(result.current.detail).toBeNull();
         expect(result.current.viewCount).toBe(0);
+    });
+
+    it('should resolve dependencies correctly', () => {
+        renderHook(() => useDetailsStore());
         expect(mockContainer.get).toHaveBeenCalledWith(TYPES.DetailsStoreController);
     });
 

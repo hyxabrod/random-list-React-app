@@ -27,10 +27,19 @@ describe('GetListItemsUseCase', () => {
         const args = new GetListItemsUseCase.Args({ page: 0, pageSize: 20 });
         const result = await useCase.execute(args);
 
-        expect(mockItemRepository.getItems).toHaveBeenCalledWith(0, 20);
         expect(result.isSuccess).toBe(true);
         expect(result.getValue()).toEqual(mockItems);
         expect(result.getValue()).toHaveLength(2);
+    });
+
+    it('should call repository with correct arguments', async () => {
+        const mockItems = [];
+        mockItemRepository.getItems.mockResolvedValue(mockItems);
+
+        const args = new GetListItemsUseCase.Args({ page: 0, pageSize: 20 });
+        await useCase.execute(args);
+
+        expect(mockItemRepository.getItems).toHaveBeenCalledWith(0, 20);
     });
 
     it('should return failure for negative page number', async () => {

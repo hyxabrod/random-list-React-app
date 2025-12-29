@@ -22,7 +22,15 @@ describe('ObserveViewCountUseCase', () => {
 
         const result = useCase.execute('123');
 
-        expect(mockRepository.observeViewCount).toHaveBeenCalledWith('123');
         expect(result).toBe(mockObservable);
+    });
+
+    it('should call repository with correct args', () => {
+        const mockObservable = of(42);
+        mockRepository.observeViewCount.mockReturnValue(mockObservable);
+
+        useCase.execute('123');
+
+        expect(mockRepository.observeViewCount).toHaveBeenCalledWith('123');
     });
 });
