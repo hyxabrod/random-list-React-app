@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { getContainer } from '../../core/inversify.config';
-import { TYPES } from '../../core/types';
+import { getContainer } from '../../di/inversify.config';
+import { TYPES } from '../../di/types';
 
 const container = getContainer();
 
