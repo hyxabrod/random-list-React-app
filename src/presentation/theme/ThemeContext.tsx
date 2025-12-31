@@ -6,12 +6,14 @@ interface ThemeContextType {
     theme: ColorSchemeName;
     colors: ThemeColors;
     isDark: boolean;
+    toggleTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
     theme: 'light',
     colors: LightColors,
     isDark: false,
+    toggleTheme: () => { },
 });
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -32,6 +34,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         return () => subscription.remove();
     }, [systemScheme]);
 
+    const toggleTheme = React.useCallback(() => {
+        setColorScheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+    }, []);
+
     const themeData = useMemo(() => {
         const currentScheme = colorScheme || 'light';
         const colors = getThemeColors(currentScheme);
@@ -39,8 +45,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             theme: currentScheme,
             colors: colors,
             isDark: currentScheme === 'dark',
+            toggleTheme: toggleTheme,
         };
-    }, [colorScheme]);
+    }, [colorScheme, toggleTheme]);
 
     return (
         <ThemeContext.Provider value={themeData}>

@@ -24,7 +24,7 @@ import { LoadingView } from '../components/common/LoadingView';
 import { ErrorView } from '../components/common/ErrorView';
 
 export default function ListScreen({ navigation }: Props) {
-    const { colors } = useAppTheme();
+    const { colors, isDark, toggleTheme } = useAppTheme();
     const items = useListStore((state) => state.items);
     const isLoadingMore = useListStore((state) => state.isLoadingMore);
     const isRefreshing = useListStore((state) => state.isRefreshing);
@@ -66,10 +66,20 @@ export default function ListScreen({ navigation }: Props) {
 
     const renderHeader = () => (
         <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.separator }]}>
-            <Text style={[styles.headerTitle, { color: colors.text }]}>Random Strings</Text>
-            <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
-                {items.length} items • Clean Architecture
-            </Text>
+            <View style={styles.headerTopRow}>
+                <View>
+                    <Text style={[styles.headerTitle, { color: colors.text }]}>Random Strings</Text>
+                    <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
+                        {items.length} items loaded
+                    </Text>
+                </View>
+                <TouchableOpacity
+                    onPress={toggleTheme}
+                    style={[styles.themeButton, { backgroundColor: colors.background }]}
+                >
+                    <Text style={{ fontSize: 20 }}>{isDark ? '☀️' : '🌙'}</Text>
+                </TouchableOpacity>
+            </View>
             {error && (
                 <View style={{ marginTop: 12 }}>
                     <ErrorView
@@ -133,6 +143,19 @@ const styles = StyleSheet.create({
         paddingTop: 60,
         paddingBottom: 24,
         borderBottomWidth: 1,
+    },
+    headerTopRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+    },
+    themeButton: {
+        padding: 8,
+        borderRadius: 20,
+        width: 40,
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     headerTitle: {
         fontSize: 34,
