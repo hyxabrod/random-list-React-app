@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import ListScreen from './src/presentation/screens/ListScreen';
 import DetailsScreen from './src/presentation/screens/DetailsScreen';
 import { RootStackParamList } from './src/presentation/navigation/types';
@@ -12,7 +12,7 @@ import { ThemeProvider, useAppTheme } from './src/presentation/theme/ThemeContex
 import { LightColors, DarkColors } from './src/presentation/theme/ThemeColors';
 import { DefaultTheme, DarkTheme as NavigationDarkTheme, Theme } from '@react-navigation/native';
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Stack = createStackNavigator<RootStackParamList>();
 
 function AppContent() {
     const { isDark, colors } = useAppTheme();
@@ -36,8 +36,8 @@ function AppContent() {
                     initialRouteName="List"
                     screenOptions={{
                         headerShown: false,
-                        animation: 'slide_from_right',
-                        contentStyle: { backgroundColor: colors.background },
+                        cardStyle: { backgroundColor: 'transparent' },
+                        ...TransitionPresets.SlideFromRightIOS,
                     }}
                 >
                     <Stack.Screen
@@ -51,7 +51,6 @@ function AppContent() {
                         options={{
                             title: 'Details',
                             presentation: 'transparentModal',
-                            animation: 'slide_from_right',
                         }}
                     />
                 </Stack.Navigator>
