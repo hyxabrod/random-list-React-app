@@ -7,7 +7,7 @@ export class ItemDetail extends DomainModel {
         public id: string,
         public title: string,
         public text: string,
-        public imageUrl: string = ''
+        public imageUrl: string = '',
     ) {
         super();
     }
@@ -17,7 +17,7 @@ export class ItemDetail extends DomainModel {
             this.id,
             this.title,
             this.text,
-            this.imageUrl
+            this.imageUrl,
         );
     }
 }

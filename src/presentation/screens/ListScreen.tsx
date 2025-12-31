@@ -18,8 +18,13 @@ import { ListItemPresentationModel } from '../models/ListItemPresentationModel';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'List'>;
 
-export default function ListScreen({ navigation }: Props) {
+import { useAppTheme } from '../theme/ThemeContext';
+import { ListItem } from '../components/list/ListItem';
+import { LoadingView } from '../components/common/LoadingView';
+import { ErrorView } from '../components/common/ErrorView';
 
+export default function ListScreen({ navigation }: Props) {
+    const { colors } = useAppTheme();
     const items = useListStore((state) => state.items);
     const isLoadingMore = useListStore((state) => state.isLoadingMore);
     const isRefreshing = useListStore((state) => state.isRefreshing);
@@ -53,24 +58,26 @@ export default function ListScreen({ navigation }: Props) {
         if (!isLoadingMore) return null;
         return (
             <View style={styles.footerLoader}>
-                <ActivityIndicator size="small" color="#007AFF" />
-                <Text style={styles.loadingText}>Loading...</Text>
+                <ActivityIndicator size="small" color={colors.accent} />
+                <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Loading...</Text>
             </View>
         );
     };
 
     const renderHeader = () => (
-        <View style={styles.header}>
-            <Text style={styles.headerTitle}>Random Strings</Text>
-            <Text style={styles.headerSubtitle}>
+        <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.separator }]}>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>Random Strings</Text>
+            <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
                 {items.length} items • Clean Architecture
             </Text>
             {error && (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>⚠️ {error}</Text>
-                    <TouchableOpacity onPress={clearError} style={styles.errorButton}>
-                        <Text style={styles.errorButtonText}>Close</Text>
-                    </TouchableOpacity>
+                <View style={{ marginTop: 12 }}>
+                    <ErrorView
+                        message={error}
+                        onRetry={clearError}
+                        retryText="Close"
+                        icon="⚠️"
+                    />
                 </View>
             )}
         </View>
@@ -78,16 +85,18 @@ export default function ListScreen({ navigation }: Props) {
 
     const renderEmpty = () => (
         <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>List is empty</Text>
-            <TouchableOpacity onPress={initialize} style={styles.retryButton}>
-                <Text style={styles.retryButtonText}>Try Again</Text>
-            </TouchableOpacity>
+            <ErrorView
+                message="List is empty"
+                onRetry={initialize}
+                retryText="Try Again"
+                icon=""
+            />
         </View>
     );
 
     return (
-        <View style={styles.container}>
-            <StatusBar barStyle="dark-content" />
+        <View style={{ flex: 1, backgroundColor: colors.background }}>
+            <StatusBar barStyle={colors.statusBarStyle} />
             <FlatList
                 data={items}
                 renderItem={renderItem}
@@ -106,8 +115,8 @@ export default function ListScreen({ navigation }: Props) {
                     <RefreshControl
                         refreshing={isRefreshing}
                         onRefresh={refreshItems}
-                        tintColor="#007AFF"
-                        colors={['#007AFF']}
+                        tintColor={colors.accent}
+                        colors={[colors.accent]}
                     />
                 }
             />
@@ -115,115 +124,24 @@ export default function ListScreen({ navigation }: Props) {
     );
 }
 
-const ListItem = React.memo(({ item, index, onPress }: {
-    item: ListItemPresentationModel;
-    index: number;
-    onPress: (item: ListItemPresentationModel) => void;
-}) => (
-    <TouchableOpacity
-        style={styles.itemContainer}
-        onPress={() => onPress(item)}
-        activeOpacity={0.7}
-    >
-        <View style={styles.itemContent}>
-            <Text style={styles.itemNumber}>{index + 1}</Text>
-            <Text style={styles.itemTitle}>{item.title}</Text>
-            <Text style={styles.arrow}>›</Text>
-        </View>
-    </TouchableOpacity>
-));
-
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#F5F5F7',
-    },
     listContent: {
         paddingBottom: 20,
     },
     header: {
-        backgroundColor: '#FFFFFF',
         padding: 20,
         paddingTop: 60,
         paddingBottom: 24,
         borderBottomWidth: 1,
-        borderBottomColor: '#E5E5EA',
     },
     headerTitle: {
         fontSize: 34,
         fontWeight: '700',
-        color: '#000000',
         marginBottom: 4,
     },
     headerSubtitle: {
         fontSize: 15,
-        color: '#8E8E93',
         marginTop: 4,
-    },
-    errorContainer: {
-        marginTop: 12,
-        padding: 12,
-        backgroundColor: '#FFE5E5',
-        borderRadius: 8,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-    },
-    errorText: {
-        color: '#D32F2F',
-        fontSize: 14,
-        flex: 1,
-    },
-    errorButton: {
-        marginLeft: 12,
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        backgroundColor: '#D32F2F',
-        borderRadius: 6,
-    },
-    errorButtonText: {
-        color: '#FFFFFF',
-        fontSize: 13,
-        fontWeight: '600',
-    },
-    itemContainer: {
-        backgroundColor: '#FFFFFF',
-        marginHorizontal: 16,
-        marginTop: 12,
-        borderRadius: 12,
-        overflow: 'hidden',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    itemContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 16,
-        minHeight: 64,
-    },
-    itemNumber: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#007AFF',
-        minWidth: 32,
-    },
-    itemTitle: {
-        flex: 1,
-        fontSize: 17,
-        color: '#000000',
-        marginLeft: 12,
-        fontWeight: '500',
-    },
-    arrow: {
-        fontSize: 24,
-        color: '#C7C7CC',
-        marginLeft: 8,
     },
     footerLoader: {
         paddingVertical: 20,
@@ -231,27 +149,9 @@ const styles = StyleSheet.create({
     },
     loadingText: {
         marginTop: 8,
-        color: '#8E8E93',
         fontSize: 14,
     },
     emptyContainer: {
-        padding: 40,
-        alignItems: 'center',
-    },
-    emptyText: {
-        fontSize: 17,
-        color: '#8E8E93',
-        marginBottom: 16,
-    },
-    retryButton: {
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        backgroundColor: '#007AFF',
-        borderRadius: 8,
-    },
-    retryButtonText: {
-        color: '#FFFFFF',
-        fontSize: 16,
-        fontWeight: '600',
+        paddingTop: 40,
     },
 });

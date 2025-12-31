@@ -6,34 +6,57 @@ import ListScreen from './src/presentation/screens/ListScreen';
 import DetailsScreen from './src/presentation/screens/DetailsScreen';
 import { RootStackParamList } from './src/presentation/navigation/types';
 
+import { useColorScheme } from 'react-native';
+import { ThemeProvider, useAppTheme } from './src/presentation/theme/ThemeContext';
+import { LightColors, DarkColors } from './src/presentation/theme/ThemeColors';
+import { DefaultTheme, DarkTheme as NavigationDarkTheme, Theme } from '@react-navigation/native';
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export default function App() {
+function AppContent() {
+    const { isDark, colors } = useAppTheme();
+
+    const navigationTheme: Theme = {
+        ...(isDark ? NavigationDarkTheme : DefaultTheme),
+        colors: {
+            ...(isDark ? NavigationDarkTheme.colors : DefaultTheme.colors),
+            background: colors.background,
+            card: colors.surface,
+            text: colors.text,
+            border: colors.separator,
+            primary: colors.accent,
+        },
+    };
+
     return (
-        <NavigationContainer>
+        <NavigationContainer theme={navigationTheme}>
             <Stack.Navigator
                 initialRouteName="List"
                 screenOptions={{
                     headerShown: false,
                     animation: 'slide_from_right',
-                    contentStyle: { backgroundColor: '#F5F5F7' },
+                    contentStyle: { backgroundColor: colors.background },
                 }}
             >
                 <Stack.Screen
                     name="List"
                     component={ListScreen}
-                    options={{
-                        title: 'List',
-                    }}
+                    options={{ title: 'List' }}
                 />
                 <Stack.Screen
                     name="Details"
                     component={DetailsScreen}
-                    options={{
-                        title: 'Details',
-                    }}
+                    options={{ title: 'Details' }}
                 />
             </Stack.Navigator>
         </NavigationContainer>
+    );
+}
+
+export default function App() {
+    return (
+        <ThemeProvider>
+            <AppContent />
+        </ThemeProvider>
     );
 }
