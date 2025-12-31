@@ -56,7 +56,7 @@ export default function DetailsScreen({ route, navigation }: Props) {
                     style={styles.backButton}
                     activeOpacity={0.6}
                 >
-                    <Text style={[styles.backButtonText, { color: colors.accent }]}>‹ Back</Text>
+                    <Text style={[styles.backButtonText, { color: colors.accent }]}>‹</Text>
                 </TouchableOpacity>
                 <Text style={[styles.headerTitle, { color: colors.text }]} numberOfLines={1}>Details</Text>
                 <View style={styles.placeholder} />

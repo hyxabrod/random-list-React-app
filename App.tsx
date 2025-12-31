@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ListScreen from './src/presentation/screens/ListScreen';
 import DetailsScreen from './src/presentation/screens/DetailsScreen';
 import { RootStackParamList } from './src/presentation/navigation/types';
+import { View } from 'react-native';
 
 import { useColorScheme } from 'react-native';
 import { ThemeProvider, useAppTheme } from './src/presentation/theme/ThemeContext';
@@ -29,27 +30,33 @@ function AppContent() {
     };
 
     return (
-        <NavigationContainer theme={navigationTheme}>
-            <Stack.Navigator
-                initialRouteName="List"
-                screenOptions={{
-                    headerShown: false,
-                    animation: 'slide_from_right',
-                    contentStyle: { backgroundColor: colors.background },
-                }}
-            >
-                <Stack.Screen
-                    name="List"
-                    component={ListScreen}
-                    options={{ title: 'List' }}
-                />
-                <Stack.Screen
-                    name="Details"
-                    component={DetailsScreen}
-                    options={{ title: 'Details' }}
-                />
-            </Stack.Navigator>
-        </NavigationContainer>
+        <View style={{ flex: 1, backgroundColor: colors.background }}>
+            <NavigationContainer theme={navigationTheme}>
+                <Stack.Navigator
+                    initialRouteName="List"
+                    screenOptions={{
+                        headerShown: false,
+                        animation: 'slide_from_right',
+                        contentStyle: { backgroundColor: colors.background },
+                    }}
+                >
+                    <Stack.Screen
+                        name="List"
+                        component={ListScreen}
+                        options={{ title: 'List' }}
+                    />
+                    <Stack.Screen
+                        name="Details"
+                        component={DetailsScreen}
+                        options={{
+                            title: 'Details',
+                            presentation: 'transparentModal',
+                            animation: 'slide_from_right',
+                        }}
+                    />
+                </Stack.Navigator>
+            </NavigationContainer>
+        </View>
     );
 }
 

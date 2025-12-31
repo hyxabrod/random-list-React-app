@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useMemo } from 'react';
-import { useColorScheme, ColorSchemeName } from 'react-native';
+import React, { createContext, useContext, useMemo, useEffect, useState } from 'react';
+import { useColorScheme, ColorSchemeName, Appearance } from 'react-native';
 import { ThemeColors, getThemeColors, LightColors, DarkColors } from './ThemeColors';
 
 interface ThemeContextType {
@@ -15,14 +15,30 @@ const ThemeContext = createContext<ThemeContextType>({
 });
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const colorScheme = useColorScheme();
+    // Initialize with current system appearance
+    const systemScheme = useColorScheme();
+    const [colorScheme, setColorScheme] = useState<ColorSchemeName>(systemScheme);
+
+    useEffect(() => {
+        // Update state when system theme changes
+        setColorScheme(systemScheme);
+
+        // Add listener for appearance changes (redundant with useColorScheme usually, 
+        // but ensures we catch updates if the hook lags)
+        const subscription = Appearance.addChangeListener(({ colorScheme: newScheme }) => {
+            setColorScheme(newScheme);
+        });
+
+        return () => subscription.remove();
+    }, [systemScheme]);
 
     const themeData = useMemo(() => {
-        const colors = getThemeColors(colorScheme);
+        const currentScheme = colorScheme || 'light';
+        const colors = getThemeColors(currentScheme);
         return {
-            theme: colorScheme,
+            theme: currentScheme,
             colors: colors,
-            isDark: colorScheme === 'dark',
+            isDark: currentScheme === 'dark',
         };
     }, [colorScheme]);
 
