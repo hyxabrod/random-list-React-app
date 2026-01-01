@@ -6,6 +6,7 @@ import { IViewCountRepository } from '../../repositories/IViewCountRepository';
 
 const mockRepository: jest.Mocked<IViewCountRepository> = {
     observeViewCount: jest.fn(),
+    getViewCount: jest.fn(),
 };
 
 describe('ObserveViewCountUseCase', () => {

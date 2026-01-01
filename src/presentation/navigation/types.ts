@@ -1,5 +1,5 @@
 
 export type RootStackParamList = {
     List: undefined;
-    Details: { title: string; id: string };
+    Details: { title: string; id: string; viewCount: number };
 };

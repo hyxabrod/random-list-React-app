@@ -38,6 +38,7 @@ describe('ListStoreController', () => {
             items: [],
             currentPage: 0,
             isLoadingMore: false,
+            isLoadingInitial: true,
             isRefreshing: false,
             error: null,
         });
@@ -73,11 +74,6 @@ describe('ListStoreController', () => {
 
     it('should load more items successfully', async () => {
         const initialItems = [{ id: '1' }] as any;
-        // Access private method or state setter via casting if essential, 
-        // OR rely on public behavior.
-        // We can simulate state by mocking the start state if we could, 
-        // but here we just manually update if possible?
-        // Since _setState is private, we can't easily set state from test without casting to any.
         (controller as any)._setState({ items: initialItems, currentPage: 0 });
 
         const newItems = [{ id: '2' }] as any;

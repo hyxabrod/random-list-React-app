@@ -53,6 +53,11 @@ describe('GetListItemsUseCase', () => {
         const result = await useCase.execute(args);
         expect(result.isFailure).toBe(true);
         expect(result.error!.message).toBe('Page number cannot be negative');
+    });
+
+    it('should not call repository when page number is negative', async () => {
+        const args = new GetListItemsArgs(-1, 20);
+        await useCase.execute(args);
         expect(mockItemRepository.getItems).not.toHaveBeenCalled();
     });
 
@@ -66,6 +71,14 @@ describe('GetListItemsUseCase', () => {
         result = await useCase.execute(args2);
         expect(result.isFailure).toBe(true);
         expect(result.error!.message).toBe('Page size must be between 1 and 100');
+    });
+
+    it('should not call repository when page size is invalid', async () => {
+        const args1 = new GetListItemsArgs(0, 0);
+        await useCase.execute(args1);
+
+        const args2 = new GetListItemsArgs(0, 101);
+        await useCase.execute(args2);
 
         expect(mockItemRepository.getItems).not.toHaveBeenCalled();
     });

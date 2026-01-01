@@ -11,6 +11,7 @@ import { GetListItemsUseCase } from '../domain/usecases/GetListItemsUseCase';
 import { GetItemDetailUseCase } from '../domain/usecases/GetItemDetailUseCase';
 import { RefreshItemsUseCase } from '../domain/usecases/RefreshItemsUseCase';
 import { ObserveViewCountUseCase } from '../domain/usecases/ObserveViewCountUseCase';
+import { GetViewCountUseCase } from '../domain/usecases/GetViewCountUseCase';
 
 import { ListStoreController } from '../presentation/controllers/ListStoreController';
 import { DetailsStoreController } from '../presentation/controllers/DetailsStoreController';
@@ -64,6 +65,12 @@ export function getContainer(): Container {
         );
     }).inTransientScope();
 
+    container.bind<GetViewCountUseCase>(TYPES.GetViewCountUseCase).toDynamicValue(() => {
+        return new GetViewCountUseCase(
+            container.get(TYPES.ViewCountRepository)
+        );
+    }).inTransientScope();
+
     container.bind<ListStoreController>(TYPES.ListStoreController).toDynamicValue(() => {
         return new ListStoreController(
             container.get(TYPES.GetListItemsUseCase),
@@ -76,6 +83,7 @@ export function getContainer(): Container {
         return new DetailsStoreController(
             container.get(TYPES.GetItemDetailUseCase),
             container.get(TYPES.ObserveViewCountUseCase),
+            container.get(TYPES.GetViewCountUseCase),
             container.get(TYPES.AppState)
         );
     }).inSingletonScope();

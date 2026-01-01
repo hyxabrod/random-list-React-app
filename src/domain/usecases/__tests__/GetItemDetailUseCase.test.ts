@@ -22,7 +22,6 @@ describe('GetItemDetailUseCase', () => {
 
     it('should retrieve item detail successfully', async () => {
         const mockDetail = new ItemDetail('1', 'Title', 'Desc.', 'Image');
-        // Repo returns success with the entity
         mockItemRepository.getItemDetail.mockResolvedValue(Result.success(mockDetail));
 
         const args = new GetItemDetailArgs('1');
@@ -58,8 +57,20 @@ describe('GetItemDetailUseCase', () => {
         expect(result.isFailure).toBe(true);
     });
 
+    it('should not call repository when ID is missing', async () => {
+        let args = new GetItemDetailArgs(null as any);
+        await useCase.execute(args);
+
+        args = new GetItemDetailArgs('');
+        await useCase.execute(args);
+
+        args = new GetItemDetailArgs('   ');
+        await useCase.execute(args);
+
+        expect(mockItemRepository.getItemDetail).not.toHaveBeenCalled();
+    });
+
     it('should return failure if item is invalid', async () => {
-        // Invalid because properties are empty strings but valid constraints for constructor maybe?
         const invalidDetail = new ItemDetail('1', '', '', '');
 
         mockItemRepository.getItemDetail.mockResolvedValue(Result.success(invalidDetail));

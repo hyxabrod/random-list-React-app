@@ -19,7 +19,6 @@ describe('RefreshItemsUseCase', () => {
     });
 
     it('should return success result', async () => {
-        // Mock success Result
         mockItemRepository.refreshItems.mockResolvedValue(Result.success(undefined));
 
         const result = await useCase.execute();
@@ -34,7 +33,6 @@ describe('RefreshItemsUseCase', () => {
     });
 
     it('should return failure if repository fails with error', async () => {
-        // Mock Throw
         mockItemRepository.refreshItems.mockRejectedValue(new Error('Repo error'));
 
         const result = await useCase.execute();

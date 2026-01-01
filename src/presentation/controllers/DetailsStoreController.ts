@@ -2,6 +2,7 @@
 import { AppStateStatic, AppStateStatus } from 'react-native';
 import { GetItemDetailUseCase } from '../../domain/usecases/GetItemDetailUseCase';
 import { ObserveViewCountUseCase } from '../../domain/usecases/ObserveViewCountUseCase';
+import { GetViewCountUseCase } from '../../domain/usecases/GetViewCountUseCase';
 import { ItemDetailPresentationModel } from '../../presentation/models/ItemDetailPresentationModel';
 import { Subscription } from 'rxjs';
 
@@ -25,6 +26,7 @@ export class DetailsStoreController {
     constructor(
         private getItemDetailUseCase: GetItemDetailUseCase,
         private observeViewCountUseCase: ObserveViewCountUseCase,
+        private getViewCountUseCase: GetViewCountUseCase,
         private appState: AppStateStatic
     ) {
         this.state = {
@@ -98,8 +100,21 @@ export class DetailsStoreController {
         }
     }
 
-    async getItemDetails(id: string): Promise<ItemDetailPresentationModel | null> {
+    async getItemDetails(id: string, initialViewCount: number = 0): Promise<ItemDetailPresentationModel | null> {
         this.activeItemId = id;
+
+        let storedViewCount = 0;
+        try {
+            const countArgs = new GetViewCountUseCase.Args(id);
+            const countResult = this.getViewCountUseCase.execute(countArgs);
+            if (countResult.isSuccess) {
+                storedViewCount = countResult.getValue().count;
+            }
+        } catch (e) {
+            console.warn('Failed to get stored view count', e);
+        }
+
+        const effectiveInitialViewCount = storedViewCount > 0 ? storedViewCount : initialViewCount;
 
         if (!this.isPaused) {
             this._startObserving(id);
@@ -107,11 +122,11 @@ export class DetailsStoreController {
 
         if (this.state.detailsCache.has(id)) {
             const detail = this.state.detailsCache.get(id)!;
-            this._setState({ detail, isLoading: false, error: null });
+            this._setState({ detail, isLoading: false, error: null, viewCount: effectiveInitialViewCount });
             return detail;
         }
 
-        this._setState({ isLoading: true, error: null, viewCount: 0 });
+        this._setState({ isLoading: true, error: null, viewCount: effectiveInitialViewCount });
 
         try {
             const args = new GetItemDetailUseCase.Args(id);

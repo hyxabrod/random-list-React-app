@@ -23,7 +23,7 @@ import { TechCard } from '../components/details/TechCard';
 
 export default function DetailsScreen({ route, navigation }: Props) {
     const { colors } = useAppTheme();
-    const { title, id } = route.params;
+    const { title, id, viewCount: initialViewCount } = route.params;
 
     const detail = useDetailsStore(state => state.detail);
     const viewCount = useDetailsStore(state => state.viewCount);
@@ -34,15 +34,15 @@ export default function DetailsScreen({ route, navigation }: Props) {
     const reset = useDetailsStore(state => state.reset);
 
     useEffect(() => {
-        getItemDetails(id);
+        getItemDetails(id, initialViewCount);
         return () => {
             reset();
         };
-    }, [id, getItemDetails, reset]);
+    }, [id, initialViewCount, getItemDetails, reset]);
 
     const retry = () => {
         clearError();
-        getItemDetails(id);
+        getItemDetails(id, initialViewCount);
     };
 
     return (

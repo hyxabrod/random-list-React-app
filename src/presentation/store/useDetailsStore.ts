@@ -10,7 +10,7 @@ const container = getContainer();
 const controller = container.get<DetailsStoreController>(TYPES.DetailsStoreController);
 
 interface DetailsStore extends DetailsState {
-    getItemDetails: (id: string) => Promise<ItemDetailPresentationModel | null>;
+    getItemDetails: (id: string, initialViewCount?: number) => Promise<ItemDetailPresentationModel | null>;
     reset: () => void;
     clearError: () => void;
 }
@@ -24,7 +24,7 @@ const useDetailsStore = create<DetailsStore>((set, get) => {
     return {
         ...controller.getState(),
 
-        getItemDetails: (id: string) => controller.getItemDetails(id),
+        getItemDetails: (id: string, initialViewCount?: number) => controller.getItemDetails(id, initialViewCount),
         reset: () => controller.reset(),
         clearError: () => controller.clearError(),
     };

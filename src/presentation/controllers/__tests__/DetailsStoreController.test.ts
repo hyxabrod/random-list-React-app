@@ -4,12 +4,17 @@ import { DetailsStoreController } from '../DetailsStoreController';
 import { Result } from '../../../core/Result';
 import { Subject } from 'rxjs';
 import { AppStateStatic } from 'react-native';
+import { ViewCountPresentationModel } from '../../models/ViewCountPresentationModel';
 
 const mockGetItemDetailUseCase = {
     execute: jest.fn(),
 } as any;
 
 const mockObserveViewCountUseCase = {
+    execute: jest.fn(),
+} as any;
+
+const mockGetViewCountUseCase = {
     execute: jest.fn(),
 } as any;
 
@@ -20,19 +25,21 @@ const mockAppState = {
 describe('DetailsStoreController', () => {
     let controller: DetailsStoreController;
     let mockAppStateSubscription: { remove: jest.Mock };
-    let viewCountSubject: Subject<number>;
+    let viewCountSubject: Subject<any>;
 
     beforeEach(() => {
         jest.clearAllMocks();
         mockAppStateSubscription = { remove: jest.fn() };
         (mockAppState.addEventListener as jest.Mock).mockReturnValue(mockAppStateSubscription);
 
-        viewCountSubject = new Subject() as any;
+        viewCountSubject = new Subject();
         mockObserveViewCountUseCase.execute.mockReturnValue(viewCountSubject);
+        mockGetViewCountUseCase.execute.mockReturnValue(Result.success(new ViewCountPresentationModel(0)));
 
         controller = new DetailsStoreController(
             mockGetItemDetailUseCase,
             mockObserveViewCountUseCase,
+            mockGetViewCountUseCase,
             mockAppState
         );
     });
@@ -45,6 +52,35 @@ describe('DetailsStoreController', () => {
             isLoading: false,
             error: null,
         });
+    });
+
+    it('should use stored view count if available', async () => {
+        const storedCount = 100;
+        mockGetViewCountUseCase.execute.mockReturnValue(Result.success(new ViewCountPresentationModel(storedCount)));
+        mockGetItemDetailUseCase.execute.mockResolvedValue(Result.success({ id: '1', title: 'Details' }));
+
+        await controller.getItemDetails('1', 0);
+
+        expect(controller.getState().viewCount).toBe(storedCount);
+    });
+
+    it('should call GetViewCountUseCase using stored count', async () => {
+        const storedCount = 100;
+        mockGetViewCountUseCase.execute.mockReturnValue(Result.success(new ViewCountPresentationModel(storedCount)));
+        mockGetItemDetailUseCase.execute.mockResolvedValue(Result.success({ id: '1', title: 'Details' }));
+
+        await controller.getItemDetails('1', 0);
+
+        expect(mockGetViewCountUseCase.execute).toHaveBeenCalledWith(expect.objectContaining({ id: '1' }));
+    });
+
+    it('should use passed initial view count if no stored count', async () => {
+        mockGetViewCountUseCase.execute.mockReturnValue(Result.success(new ViewCountPresentationModel(0)));
+        mockGetItemDetailUseCase.execute.mockResolvedValue(Result.success({ id: '1', title: 'Details' }));
+
+        await controller.getItemDetails('1', 50);
+
+        expect(controller.getState().viewCount).toBe(50);
     });
 
     it('should get item details successfully', async () => {
@@ -63,15 +99,6 @@ describe('DetailsStoreController', () => {
         expect(controller.getState().detailsCache.get('1')).toEqual(mockDetail);
     });
 
-    it('should call GetItemDetailUseCase with correct args', async () => {
-        const mockDetail = { id: '1', title: 'Details' };
-        mockGetItemDetailUseCase.execute.mockResolvedValue(Result.success(mockDetail));
-
-        await controller.getItemDetails('1');
-
-        expect(mockGetItemDetailUseCase.execute).toHaveBeenCalled();
-    });
-
     it('should check cache before fetching', async () => {
         const mockDetail = { id: '1', title: 'Cached' } as any;
         (controller as any)._setState((state: any) => {
@@ -82,8 +109,20 @@ describe('DetailsStoreController', () => {
 
         await controller.getItemDetails('1');
 
-        expect(mockGetItemDetailUseCase.execute).not.toHaveBeenCalled();
         expect(controller.getState().detail).toEqual(mockDetail);
+    });
+
+    it('should not call fetching use case if item is in cache', async () => {
+        const mockDetail = { id: '1', title: 'Cached' } as any;
+        (controller as any)._setState((state: any) => {
+            const newCache = new Map(state.detailsCache);
+            newCache.set('1', mockDetail);
+            return { detailsCache: newCache };
+        });
+
+        await controller.getItemDetails('1');
+
+        expect(mockGetItemDetailUseCase.execute).not.toHaveBeenCalled();
     });
 
     it('should handle errors when fetching details', async () => {
@@ -102,7 +141,7 @@ describe('DetailsStoreController', () => {
 
         await controller.getItemDetails('1');
 
-        viewCountSubject.next({ count: 42 } as any);
+        viewCountSubject.next({ count: 42 });
         expect(controller.getState().viewCount).toBe(42);
     });
 
@@ -123,9 +162,8 @@ describe('DetailsStoreController', () => {
         const handler = (mockAppState.addEventListener as jest.Mock).mock.calls[0][1];
 
         handler('background');
-        // Check private state or infer from behavior (subscription paused)
+
         viewCountSubject.next(100);
-        // Should not update
         expect(controller.getState().viewCount).not.toBe(100);
 
         handler('active');

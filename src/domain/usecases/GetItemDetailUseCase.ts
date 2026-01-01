@@ -1,16 +1,16 @@
 
-import { UseCaseWithArgs } from '../../core/UseCase';
+import { UseCasePromiseWithArgs } from '../../core/UseCase';
 import { Result } from '../../core/Result';
 import { ItemDetailPresentationModel } from '../../presentation/models/ItemDetailPresentationModel';
 import { IItemRepository } from '../repositories/IItemRepository';
 
-export class GetItemDetailArgs extends UseCaseWithArgs.Args {
+export class GetItemDetailArgs extends UseCasePromiseWithArgs.Args {
     constructor(public id: string) {
         super();
     }
 }
 
-export class GetItemDetailUseCase extends UseCaseWithArgs<GetItemDetailArgs, ItemDetailPresentationModel> {
+export class GetItemDetailUseCase extends UseCasePromiseWithArgs<GetItemDetailArgs, ItemDetailPresentationModel> {
     static Args = GetItemDetailArgs;
 
     constructor(private itemRepository: IItemRepository) {

@@ -8,6 +8,7 @@ export const TYPES = {
     GetListItemsUseCase: Symbol.for('GetListItemsUseCase'),
     GetItemDetailUseCase: Symbol.for('GetItemDetailUseCase'),
     ObserveViewCountUseCase: Symbol.for('ObserveViewCountUseCase'),
+    GetViewCountUseCase: Symbol.for('GetViewCountUseCase'),
     RefreshItemsUseCase: Symbol.for('RefreshItemsUseCase'),
 
     ListStoreController: Symbol.for('ListStoreController'),

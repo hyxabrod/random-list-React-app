@@ -12,10 +12,21 @@ import { ThemeProvider, useAppTheme } from './src/presentation/theme/ThemeContex
 import { LightColors, DarkColors } from './src/presentation/theme/ThemeColors';
 import { DefaultTheme, DarkTheme as NavigationDarkTheme, Theme } from '@react-navigation/native';
 
+import { SplashScreen } from './src/presentation/screens/SplashScreen';
+
 const Stack = createStackNavigator<RootStackParamList>();
 
 function AppContent() {
     const { isDark, colors } = useAppTheme();
+    const [showSplash, setShowSplash] = React.useState(true);
+
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowSplash(false);
+        }, 2500);
+
+        return () => clearTimeout(timer);
+    }, []);
 
     const navigationTheme: Theme = {
         ...(isDark ? NavigationDarkTheme : DefaultTheme),
@@ -28,6 +39,10 @@ function AppContent() {
             primary: colors.accent,
         },
     };
+
+    if (showSplash) {
+        return <SplashScreen />;
+    }
 
     return (
         <View style={{ flex: 1, backgroundColor: colors.background }}>

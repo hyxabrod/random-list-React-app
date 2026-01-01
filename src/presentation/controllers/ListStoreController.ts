@@ -8,6 +8,7 @@ export interface ListState {
     items: ListItemPresentationModel[];
     currentPage: number;
     isLoadingMore: boolean;
+    isLoadingInitial: boolean;
     isRefreshing: boolean;
     error: string | null;
 }
@@ -28,6 +29,7 @@ export class ListStoreController {
             items: [],
             currentPage: 0,
             isLoadingMore: false,
+            isLoadingInitial: true,
             isRefreshing: false,
             error: null,
         };
@@ -73,6 +75,10 @@ export class ListStoreController {
     }
 
     async initialize() {
+        if (this.state.items.length === 0) {
+            this._setState({ isLoadingInitial: true, error: null });
+        }
+
         try {
             const args = new GetListItemsUseCase.Args(0, 20);
             const result = await this.getListItemsUseCase.execute(args);
@@ -82,13 +88,14 @@ export class ListStoreController {
                     items: result.getValue(),
                     currentPage: 0,
                     error: null,
+                    isLoadingInitial: false,
                 });
             } else {
                 throw result.error;
             }
         } catch (error: any) {
             console.error('Failed to initialize:', error);
-            this._setState({ error: error.message });
+            this._setState({ error: error.message, isLoadingInitial: false });
         }
     }
 

@@ -17,16 +17,12 @@ const ThemeContext = createContext<ThemeContextType>({
 });
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    // Initialize with current system appearance
     const systemScheme = useColorScheme();
     const [colorScheme, setColorScheme] = useState<ColorSchemeName>(systemScheme);
 
     useEffect(() => {
-        // Update state when system theme changes
         setColorScheme(systemScheme);
 
-        // Add listener for appearance changes (redundant with useColorScheme usually, 
-        // but ensures we catch updates if the hook lags)
         const subscription = Appearance.addChangeListener(({ colorScheme: newScheme }) => {
             setColorScheme(newScheme);
         });

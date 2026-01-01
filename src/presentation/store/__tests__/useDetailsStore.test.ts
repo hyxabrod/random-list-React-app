@@ -60,7 +60,7 @@ describe('useDetailsStore', () => {
         act(() => {
             result.current.getItemDetails('123');
         });
-        expect(mockController.getItemDetails).toHaveBeenCalledWith('123');
+        expect(mockController.getItemDetails).toHaveBeenCalledWith('123', undefined);
     });
 
     it('should call controller reset', () => {

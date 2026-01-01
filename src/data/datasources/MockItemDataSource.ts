@@ -1,5 +1,5 @@
 
-import { generateRandomTitle, generateRandomText, generateId } from '../../utils/randomGenerator';
+import { generateRandomTitle, generateRandomText, generateId, generateRandomInt } from '../../utils/randomGenerator';
 
 export class MockItemDataSource {
     private cache: Map<string, any>;
@@ -11,7 +11,7 @@ export class MockItemDataSource {
     }
 
     async fetchItems(page: number, pageSize: number): Promise<any[]> {
-        await this._delay(300 + Math.random() * 200);
+        await this._delay(generateRandomInt(300, 500));
 
         const items = [];
         for (let i = 0; i < pageSize; i++) {
@@ -33,7 +33,7 @@ export class MockItemDataSource {
             return this.detailCache.get(id);
         }
 
-        await this._delay(400 + Math.random() * 300);
+        await this._delay(generateRandomInt(400, 700));
 
         const baseItem = this.cache.get(id) || {
             id,

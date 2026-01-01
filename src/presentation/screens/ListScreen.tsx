@@ -20,7 +20,6 @@ type Props = NativeStackScreenProps<RootStackParamList, 'List'>;
 
 import { useAppTheme } from '../theme/ThemeContext';
 import { ListItem } from '../components/list/ListItem';
-import { LoadingView } from '../components/common/LoadingView';
 import { ErrorView } from '../components/common/ErrorView';
 
 export default function ListScreen({ navigation }: Props) {
@@ -28,6 +27,7 @@ export default function ListScreen({ navigation }: Props) {
     const items = useListStore((state) => state.items);
     const isLoadingMore = useListStore((state) => state.isLoadingMore);
     const isRefreshing = useListStore((state) => state.isRefreshing);
+    const isLoadingInitial = useListStore((state) => state.isLoadingInitial);
     const error = useListStore((state) => state.error);
 
     const initialize = useListStore((state) => state.initialize);
@@ -42,7 +42,8 @@ export default function ListScreen({ navigation }: Props) {
     const handleItemPress = React.useCallback((item: ListItemPresentationModel) => {
         navigation.navigate('Details', {
             title: item.title,
-            id: item.id
+            id: item.id,
+            viewCount: item.viewCount,
         });
     }, [navigation]);
 
@@ -115,7 +116,7 @@ export default function ListScreen({ navigation }: Props) {
                 onEndReachedThreshold={0.5}
                 ListFooterComponent={renderFooter}
                 ListHeaderComponent={renderHeader}
-                ListEmptyComponent={!isRefreshing ? renderEmpty : null}
+                ListEmptyComponent={!isRefreshing && !isLoadingInitial ? renderEmpty : null}
                 contentContainerStyle={styles.listContent}
                 showsVerticalScrollIndicator={true}
                 initialNumToRender={20}
